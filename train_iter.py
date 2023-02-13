@@ -11,24 +11,25 @@ from torch import nn, optim
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
 import numpy as np
-from dataloaders.aug_slowFast_dataset import DesktopAssemblyDataset
-from network import C3D_model_8 as C3D_model
+from dataloader.dataset import DesktopAssemblyDataset
+from network import C3D_model as C3D_model
 import argparse
 import math
 # Use GPU if available else revert to CPU
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-print("Device being used:", device)
+# print("Device being used:", device)
 plot_every = 25
 print_every = 5
 train_batch_size = 8
 val_batch_size = 5
 
+# python train.py --run_id cricket 
 
 save_dir_root = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 
 
 def train_model(dataset, save_dir_root, lr,
-                max_iters, resume_iter, save_epoch, test_interval, run_id, num_classes=23, useVal=True):
+                max_iters, resume_iter, save_epoch, test_interval, run_id, num_classes=3, useVal=True):
     
     best_val_loss = 100
 
@@ -114,9 +115,9 @@ def train_model(dataset, save_dir_root, lr,
             # or being validated. Primarily affects layers such as BatchNorm or Dropout.
             if phase == 'train':
                 
-                model.train()
+                model.train() # backprop hogi
             else:
-                model.eval()
+                model.eval() #backprop nh hogi
 
             for inputs, labels in (trainval_loaders[phase]):
                 # move inputs and labels to the device the training is taking place on
@@ -133,6 +134,7 @@ def train_model(dataset, save_dir_root, lr,
 
                 probs = nn.Softmax(dim=1)(outputs)
                 preds = torch.max(probs, 1)[1]
+            
                 # print(outputs.shape)
                 # print('\n\n\n\n\n\n\n\n\n\n\n')
                 
@@ -181,7 +183,7 @@ def train_model(dataset, save_dir_root, lr,
                         np.random.seed(55+i)
                         for inputs, labels in tqdm(val_dataloader):
                             inputs = inputs.to(device)
-                            labels = labels.to(device)
+                            labels = Variable(labels).to(device).long()
 
                             with torch.no_grad():
                                 outputs = model(inputs)

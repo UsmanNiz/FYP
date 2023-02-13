@@ -6,14 +6,13 @@ import cv2
 import numpy as np
 from torch.utils.data import Dataset
 import scipy.io
-from mypath import Path
 
 class DesktopAssemblyDataset(Dataset):
 
 
-    def __init__(self, dataset = 'CAE' , split = 'train', num_classes = 9):
+    def __init__(self, dataset = 'cricket' , split = 'train', num_classes = 9):
 
-        _,self.root_dir = Path.db_dir(dataset)
+        self.root_dir = "dataloader/cricket/"
         folder = os.path.join(self.root_dir, split)
         folder_labels = os.path.join(self.root_dir, split+"_labels")
         self.split = split
@@ -41,7 +40,7 @@ class DesktopAssemblyDataset(Dataset):
 
        
         labels = np.load(self.labels[index])
-        labels = labels[::3] # subsampling because of lower framerate, Labels are at 30 fps and the dataset is at 10 fps
+        # labels = labels[::3] # subsampling because of lower framerate, Labels are at 30 fps and the dataset is at 10 fps
         label  = labels[frame_index]
         
         buffer = self.normalize(buffer)

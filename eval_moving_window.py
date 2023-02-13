@@ -55,7 +55,7 @@ def evaluate(net_path, batch_size, root, annotations_path, output_folder, force_
         print(video_name)
         count = count + 1
         
-        if os.path.exists(os.path.join(output_folder,"{}.npy".format(video_name))) and not force_rewrite:
+        if os.path.exists(os.path.join(output_folder,"{}.npy".format(video_name.replace(".mp4","")))) and not force_rewrite:
             continue
 
         length = video['length']

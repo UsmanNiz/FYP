@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-from mypath import Path
 
 class C3D(nn.Module):
     """
@@ -44,7 +43,6 @@ class C3D(nn.Module):
             self.__load_pretrained_weights()
 
     def forward(self, x):
-        print(x.shape)
         x = self.relu(self.conv1(x))
         # print(x.shape)
 
@@ -78,7 +76,6 @@ class C3D(nn.Module):
         # print(x.shape)
         x = self.pool5(x)
         # print("Reached 5")
-        print(x.shape)
 
         x = x.view(-1, 8192)
         x = self.relu(self.fc6(x))
@@ -128,7 +125,7 @@ class C3D(nn.Module):
                         "classifier.3.bias": "fc7.bias",
                         }
 
-        p_dict = torch.load(Path.model_dir())
+        p_dict = torch.load("_pretrained/c3d-pretrained.pth")
         s_dict = self.state_dict()
         for name in p_dict:
             if name not in corresp_name:

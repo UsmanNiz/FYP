@@ -17,8 +17,8 @@ from tensorboardX import SummaryWriter
 from torch import nn, optim
 from torch.autograd import Variable
 import numpy as np
-from dataloaders.dataset import DesktopAssemblyDataset
-from network import C3D_model, R2Plus1D_model, R3D_model
+from dataloader.dataset import DesktopAssemblyDataset
+from network import C3D_model
 import glob
 
 # DONE: Perform inference
@@ -29,31 +29,37 @@ def Visualize_Labels(path_to_frames, path_to_labels, video_name, curr_preds):
 
     fourcc = cv2.VideoWriter_fourcc(*'DIVX')
 
-    label_dict ={
-            "Pick up chip": 1,
-            "Place chip on motherboard": 2,
-            "Close cover": 3,
-            "Pick up screw and screwdriver": 4,
-            "Tighten screw": 5,
-            "Plug stick in": 6,
-            "Pick up fan": 7,
-            "Place fan on motherboard": 8,
-            "Tighten screw 1": 9,
-            "Tighten screw 2": 10,
-            "Tighten screw 3": 11,
-            "Tighten screw 4": 12,
-            "Put screwdriver down": 13,
-            "Connect wire to motherboard": 14,
-            "Pick up RAM": 15,
-            "Install RAM": 16,
-            "Pick up HDD": 17,
-            "Install HDD": 18,
-            "Connect wire 1 to HDD": 19,
-            "Connect wire 2 to HDD": 20,
-            "Pick up lid": 21,
-            "Close lid": 22,
-            "Background": 0
-            }
+    # label_dict ={
+    #         "Pick up chip": 1,
+    #         "Place chip on motherboard": 2,
+    #         "Close cover": 3,
+    #         "Pick up screw and screwdriver": 4,
+    #         "Tighten screw": 5,
+    #         "Plug stick in": 6,
+    #         "Pick up fan": 7,
+    #         "Place fan on motherboard": 8,
+    #         "Tighten screw 1": 9,
+    #         "Tighten screw 2": 10,
+    #         "Tighten screw 3": 11,
+    #         "Tighten screw 4": 12,
+    #         "Put screwdriver down": 13,
+    #         "Connect wire to motherboard": 14,
+    #         "Pick up RAM": 15,
+    #         "Install RAM": 16,
+    #         "Pick up HDD": 17,
+    #         "Install HDD": 18,
+    #         "Connect wire 1 to HDD": 19,
+    #         "Connect wire 2 to HDD": 20,
+    #         "Pick up lid": 21,
+    #         "Close lid": 22,
+    #         "Background": 0
+    #         }
+    
+    label_dict = {
+        "Balling": 0,
+        "Batting": 1,
+        "Background": 2
+    }
 
     reversed_label_dict = dict((reversed(item) for item in label_dict.items()))
     out = cv2.VideoWriter(os.path.join(path_to_labels, video_name+"_vis.avi"), fourcc, 10.0, (640,480))
@@ -105,7 +111,7 @@ def evaluate(net_path, batch_size, root, output_folder, force_rewrite = False):
      
         count = count + 1
         
-        if os.path.exists(os.path.join(output_folder,"{}.npy".format(video_name))) and not force_rewrite:
+        if os.path.exists(os.path.join(output_folder,"{}.npy".format(video_name.replace(".mp4","")))) and not force_rewrite:
             continue
 
         length = video['length']
